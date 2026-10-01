@@ -24,11 +24,19 @@ jobs:
       - run: npm ci
       - run: npm run check
       - run: npx playwright install --with-deps chromium
-      - run: |
-          npm run build
-          npx playwright test
+      - run: npm run build
         env:
           PAGES_BASE_PATH: ${{ steps.pages.outputs.base_path }}/
+      - run: npx playwright test
+        env:
+          PAGES_BASE_PATH: ${{ steps.pages.outputs.base_path }}/
+      - uses: actions/upload-artifact@v7
+        if: failure()
+        with:
+          name: browser-test-diagnostics
+          path: test-results/
+          retention-days: 7
+          if-no-files-found: ignore
       - uses: actions/upload-pages-artifact@v5
         with:
           path: dist

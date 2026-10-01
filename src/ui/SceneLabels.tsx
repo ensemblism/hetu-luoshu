@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react'
-import { groupsFor, numberLabelPosition, relatedNumbers, type Diagram, type Vec3 } from '../domain/model'
+import { CONTROLLING, GENERATING, groupsFor, numberLabelPosition, relatedNumbers, type Diagram, type Vec3 } from '../domain/model'
 import { directions, pick } from '../content/text'
 import { useExperience } from '../state/store'
 
 export default function SceneLabels() {
-  const { mode, comparisonDiagram, language, lens, selected, hovered, line } = useExperience()
+  const { mode, comparisonDiagram, language, lens, selected, hovered, line, cycle, cycleIndex, relationPlaying } = useExperience()
   const [mobile, setMobile] = useState(innerWidth < 768)
   useEffect(() => { const resize = () => setMobile(innerWidth < 768); window.addEventListener('resize', resize); return () => window.removeEventListener('resize', resize) }, [])
   const diagrams: Diagram[] = mode === 'compare' ? mobile ? [comparisonDiagram] : ['hetu', 'luoshu'] : [mode]
@@ -13,7 +13,7 @@ export default function SceneLabels() {
   return <div className="scene-label-layer" aria-hidden="true">{diagrams.map((diagram, index) => {
     const offset = compared ? index === 0 ? -4.5 : 4.5 : 0
     const scale = compared ? .72 : 1
-    const active = relatedNumbers(diagram, lens, selected ?? hovered, line)
+    const active = relatedNumbers(diagram, lens, selected ?? hovered, line, relationPlaying ? (cycle === 'generating' ? GENERATING : CONTROLLING)[cycleIndex % 5] : undefined)
     const world = ([x, y, z]: Vec3) => [x * scale + offset, y * scale, z * scale].join(',')
     return <div key={diagram}>
       {groupsFor(diagram).map(group => <span key={group.number} className={`scene-label scene-number ${active.includes(group.number) ? 'active' : ''}`} data-position={world(numberLabelPosition(diagram, group.number))}>{group.number}</span>)}

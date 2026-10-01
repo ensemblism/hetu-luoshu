@@ -9,7 +9,7 @@ Primary diagram convention: ten-number Hetu, nine-number Luoshu. Reading orienta
 - *Zhouyi*, Xici I: “河出圖，洛出書，聖人則之。” https://ctext.org/book-of-changes/xi-ci-shang
 - Zhu Xi / Cai Yuanding, *Yixue Qimeng*, “本图书第一”; primary text preserved in Hu Fangping's *Yixue Qimeng Tongshi*, Siku Quanshu edition, upper volume. https://zh.wikisource.org/wiki/易學啟蒙通釋_(四庫全書本)/卷上
 - *Shangshu*, Hongfan: five-phase enumeration. https://ctext.org/shang-shu/great-plan
-- Li Guangdi et al., *Zhouyi Zhezhong*, Shuo Gua chapter 4, collected explanations quoting Xiang Anshi: later trigram directions and phase associations. https://www.shidianguji.com/mid-page/7601263576687149065
+- Li Guangdi et al., *Zhouyi Zhezhong*, Shuo Gua “万物出乎震”, collected explanations quoting Xiang Anshi: later trigram directions and phase associations. https://www.shidianguji.com/mid-page/7601263576687149065
 - Xiao Ji, *Wuxing Dayi*, volume 2, section 4 “论相生”. https://zh.wikisource.org/wiki/五行大義/2
 - Hui Dong, *Zhouyi Shu*, volume 16: controlling sequence. https://zh.wikisource.org/wiki/周易述_(四庫全書本)/卷16
 - Huang Zongxi, *Yixue Xiangshu Lun*, “图书一”: historical debate. https://zh.wikisource.org/wiki/易學象數論/圖書一

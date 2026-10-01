@@ -114,7 +114,9 @@ function DotField({ diagram }: { diagram: Diagram }) {
   const startScales = useRef(new Map<string, number>())
   const visible = useRef(0)
   const duration = useRef(0)
-  const selectedNumbers = relatedNumbers(diagram, lens, selected ?? hovered, line)
+  const sequence = cycle === 'generating' ? GENERATING : CONTROLLING
+  const activeElement = sequence[cycleIndex % 5]
+  const selectedNumbers = relatedNumbers(diagram, lens, selected ?? hovered, line, relationPlaying ? activeElement : undefined)
   const selectionKey = selectedNumbers.join(',')
   useEffect(() => {
     startPositions.current = new Map([...positions.current].map(([key, p]) => [key, [...p] as Vec3]))
@@ -127,8 +129,6 @@ function DotField({ diagram }: { diagram: Diagram }) {
   useEffect(() => { invalidate() }, [lens, selected, hovered, line, selectionKey, cycleIndex, relationPlaying, invalidate])
   useFrame((_, delta) => {
     let needsFrame = false
-    const sequence = cycle === 'generating' ? GENERATING : CONTROLLING
-    const activeElement = sequence[cycleIndex % 5]
     const renderDots = (dots: Dot[], mesh: THREE.InstancedMesh | null) => {
       if (!mesh) return
       dots.forEach((dot, i) => {
@@ -181,10 +181,10 @@ function DotField({ diagram }: { diagram: Diagram }) {
 function Relations({ diagram }: { diagram: Diagram }) {
   const { lens, selected, hovered, line, relationPlaying, cycleIndex, cycle } = useExperience()
   const active = selected ?? hovered
-  const numbers = relatedNumbers(diagram, lens, active, line)
-  const points = numbers.map(n => groupFor(diagram, n)?.center).filter(Boolean) as Vec3[]
   const sequence = cycle === 'generating' ? GENERATING : CONTROLLING
   const from = sequence[cycleIndex % 5], to = sequence[(cycleIndex + 1) % 5]
+  const numbers = relatedNumbers(diagram, lens, active, line, relationPlaying ? from : undefined)
+  const points = numbers.map(n => groupFor(diagram, n)?.center).filter(Boolean) as Vec3[]
   const cyclePoints = relationPlaying ? [from, to].map(phase => groupsFor(diagram).find(g => g.element === phase)?.center).filter(Boolean) as Vec3[] : []
   const path = lens === 'balance' && diagram === 'luoshu' ? [...BALANCE_LINES[line]].map(n => groupFor(diagram, n)!.center) : points
   const lifted = path.map(([x, , z]) => [x, 0.05, z] as Vec3)

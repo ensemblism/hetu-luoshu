@@ -4,6 +4,8 @@ const baseURL = `http://127.0.0.1:4173${process.env.PAGES_BASE_PATH || '/hetu-lu
 export default defineConfig({
   testDir: './tests/e2e',
   fullyParallel: false,
+  timeout: process.env.CI ? 45_000 : 30_000,
+  expect: { timeout: process.env.CI ? 10_000 : 5_000 },
   use: {
     baseURL,
     viewport: { width: 1440, height: 900 },

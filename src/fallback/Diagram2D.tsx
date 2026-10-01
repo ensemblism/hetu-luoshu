@@ -1,12 +1,12 @@
 import { useEffect, useMemo, useState } from 'react'
-import { ELEMENT_COLORS, groupsFor, makeDots, numberLabelPosition, relatedNumbers, type Diagram } from '../domain/model'
+import { CONTROLLING, GENERATING, ELEMENT_COLORS, groupsFor, makeDots, numberLabelPosition, relatedNumbers, type Diagram } from '../domain/model'
 import { copy, directions, pick } from '../content/text'
 import { useExperience } from '../state/store'
 
 function DiagramSvg({ diagram, mini = false }: { diagram: Diagram; mini?: boolean }) {
-  const { selected, hovered, lens, line, language, select, guide } = useExperience()
+  const { selected, hovered, lens, line, language, select, guide, cycle, cycleIndex, relationPlaying } = useExperience()
   const dots = useMemo(() => makeDots(diagram), [diagram])
-  const related = relatedNumbers(diagram, lens, selected ?? hovered, line)
+  const related = relatedNumbers(diagram, lens, selected ?? hovered, line, relationPlaying ? (cycle === 'generating' ? GENERATING : CONTROLLING)[cycleIndex % 5] : undefined)
   const path = related.map(n => groupsFor(diagram).find(g => g.number === n)!).filter(Boolean)
   return <svg viewBox="-6 -6 12 12" className="diagram-svg" role="img" aria-label={`${pick(copy[diagram], language)} ${diagram === 'hetu' ? 55 : 45} ${pick(copy.count, language)}`}>
     <circle r="4.95" fill="none" stroke="#a1a9b0" strokeWidth=".008" opacity=".2" />

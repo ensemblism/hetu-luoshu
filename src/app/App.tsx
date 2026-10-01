@@ -80,7 +80,7 @@ function RelationPanel() {
       <p>{t(explanation)} {source && <Citation source={source} />}</p>
       {lens === 'balance' && <div className="line-navigation"><button aria-label={t('previous')} className="icon-button" onClick={() => useExperience.setState({ line: (line + 7) % 8 })}><ArrowLeft size={15} /></button><span>{line + 1} / 8</span><button aria-label={t('following')} className="icon-button" onClick={() => useExperience.setState({ line: (line + 1) % 8 })}><ArrowRight size={15} /></button></div>}
       {lens === 'elements' && <>
-        <div className="cycle-toggle">{(['generating', 'controlling'] as const).map(type => <button key={type} aria-pressed={cycle === type} onClick={() => useExperience.setState({ cycle: type, cycleIndex: 0, relationPlaying: false })}>{t(type)}</button>)}<Citation source={cycle === 'generating' ? 'generatingCycle' : 'cycle'} /></div>
+        <div className="cycle-toggle">{(['generating', 'controlling'] as const).map(type => <button key={type} aria-pressed={cycle === type} onClick={() => useExperience.setState({ cycle: type, cycleIndex: group ? (type === 'generating' ? GENERATING : CONTROLLING).indexOf(group.element) : 0, relationPlaying: false })}>{t(type)}</button>)}<Citation source={cycle === 'generating' ? 'generatingCycle' : 'cycle'} /></div>
         {state.reduced
           ? <button className="relation-play" onClick={() => useExperience.setState({ cycleIndex: (cycleIndex + 1) % 5, relationPlaying: true })}><ArrowRight size={13} />{t('next')}</button>
           : <button className="relation-play" onClick={() => useExperience.setState({ relationPlaying: !relationPlaying })}>{relationPlaying ? <Pause size={13} /> : <Play size={13} />}{relationPlaying ? t('stop') : t('playRelation')}</button>}

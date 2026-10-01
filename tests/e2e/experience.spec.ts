@@ -1,8 +1,12 @@
 import { test, expect } from '@playwright/test'
 import AxeBuilder from '@axe-core/playwright'
 
-test.beforeEach(async ({ page }) => {
-  await page.addInitScript(() => { localStorage.setItem('hl-guide-seen', 'true'); localStorage.setItem('hl-language', 'en') })
+test.beforeEach(async ({ page }, info) => {
+  await page.addInitScript(({ skipGuide }) => {
+    if (skipGuide) localStorage.setItem('hl-guide-seen', 'true')
+    else localStorage.removeItem('hl-guide-seen')
+    localStorage.setItem('hl-language', 'en')
+  }, { skipGuide: !info.title.startsWith('reduced motion') })
 })
 test('loads the real 3D experience and changes diagrams and relations without errors', async ({ page }) => {
   const errors: string[] = []
@@ -76,7 +80,6 @@ test('provides complete SVG interaction when WebGL2 is unavailable', async ({ pa
 })
 test('reduced motion introduction is stepped manually and can be skipped', async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'reduce' })
-  await page.addInitScript(() => localStorage.removeItem('hl-guide-seen'))
   await page.goto('?lang=en')
   await expect(page.locator('.guide-panel')).toBeVisible()
   await expect(page.locator('.guide-panel')).toContainText('Begin with a point')
@@ -89,6 +92,12 @@ test('reduced motion introduction is stepped manually and can be skipped', async
   await expect(page.locator('.phase-formula')).toHaveText(/Wood\s+Fire/)
   await page.getByRole('button', { name: 'Next', exact: true }).click()
   await expect(page.locator('.phase-formula')).toHaveText(/Fire\s+Earth/)
+  await page.getByRole('button', { name: 'Number 1', exact: true }).click()
+  await expect(page.locator('.phase-formula')).toHaveText(/Water\s+Wood/)
+  await page.getByRole('button', { name: 'Controlling', exact: true }).click()
+  await expect(page.locator('.phase-formula')).toHaveText(/Water\s+Fire/)
+  await page.getByRole('button', { name: 'Next', exact: true }).click()
+  await expect(page.locator('.scene-number.active')).toHaveText(['2', '7'])
 })
 test('mobile controls, a source tap and the reading panel fit the screen', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 })
