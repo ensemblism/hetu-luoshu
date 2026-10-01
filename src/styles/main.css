@@ -156,6 +156,7 @@ html[lang=en] .work-description { line-height: 1.85; letter-spacing: 0; }
 @keyframes appear { from { opacity: 0; } to { opacity: 1; } }
 
 @media (min-width: 1600px) { .art-space { left: 15%; right: 7%; }.work-title { bottom: 190px; }.relation-panel { right: 65px; width: 290px; } }
+@media (min-width: 768px) { .experience[data-mode="compare"].has-selection .art-space { right: 340px; } }
 @media (max-width: 1100px) and (min-width: 768px) { .number-list { display: none; }.number-picker-trigger svg { display: block; }.number-picker.open .number-list { display: flex; position: absolute; bottom: 35px; left: 0; background: #172128; border: 1px solid var(--hairline); padding: 7px; border-radius: 5px; }.relation-panel { right: 25px; width: 235px; padding: 18px; }.work-title { width: 220px; }.art-space { left: 6%; } }
 @media (max-width: 767px) {
   .experience { min-height: 570px; background: radial-gradient(ellipse at 50% 38%, #1b242b, #0a0d10 70%); }

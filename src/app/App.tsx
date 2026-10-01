@@ -68,7 +68,7 @@ function RelationPanel() {
     <div className="panel-heading"><span className="eyebrow">{state.panelCollapsed && selected !== null ? `${t('selection')} ${selected}` : mode === 'compare' ? t('compare') : t(lens === 'original' ? 'explore' : lens)}</span><div className="panel-actions"><button className="icon-button panel-collapse" aria-label={language === 'zh-CN' ? state.panelCollapsed ? '展开说明' : '收起说明' : state.panelCollapsed ? 'Expand explanation' : 'Collapse explanation'} aria-expanded={!state.panelCollapsed} onClick={() => useExperience.setState({ panelCollapsed: !state.panelCollapsed })}><ChevronDown size={15} style={{ transform: state.panelCollapsed ? 'rotate(180deg)' : undefined }} /></button><button className="icon-button" aria-label={t('close')} onClick={() => { select(null); state.setLens('original') }}><X size={16} /></button></div></div>
     {selected !== null ? <>
       <div className="selected-number"><span>{String(selected).padStart(2, '0')}</span><i className={selected % 2 ? 'white-point' : 'black-point'} /></div>
-      <div className="number-meta"><span>{selected % 2 ? t('yang') : t('yin')}</span><span>{group ? pick(directions[group.direction], language) : ''}{group && (diagram === 'hetu' || lens === 'elements') ? ` · ${pick(elements[group.element], language)}` : ''}</span></div>
+      <div className="number-meta"><span>{selected % 2 ? t('yang') : t('yin')}</span>{mode !== 'compare' && <span>{group ? pick(directions[group.direction], language) : ''}{group && (diagram === 'hetu' || lens === 'elements') ? ` · ${pick(elements[group.element], language)}` : ''}</span>}</div>
     </> : <h2 className="relation-title">{t(lens)}</h2>}
     {mode === 'compare' && selected !== null ? <>
       <div className="compare-info">{(['hetu', 'luoshu'] as const).map(d => <div key={d}><span>{t(d)}</span><strong>{pick(directions[groupFor(d, selected)!.direction], language)}</strong></div>)}</div>
@@ -87,7 +87,7 @@ function RelationPanel() {
       </>}
       <span className="relation-kind">{source ? t('traditional') : t('computed')}</span>
     </>}
-    {selected !== null && <button className="text-button focus-selection" onClick={() => state.setView('focus')}><Focus size={14} /> {t('focus')}</button>}
+    {selected !== null && mode !== 'compare' && <button className="text-button focus-selection" onClick={() => state.setView('focus')}><Focus size={14} /> {t('focus')}</button>}
   </aside>
 }
 
@@ -199,7 +199,7 @@ export default function App() {
     {!guide && <RelationPanel />}
     {guide && (ready || twoD) && !modal && <Guide />}
     <div className="diagram-navigation" aria-label={language === 'zh-CN' ? '图式选择' : 'Diagram selection'}>{(['hetu', 'luoshu', 'compare'] as Mode[]).map(item => <button key={item} aria-pressed={mode === item} onClick={() => interact(() => setMode(item))}><span>{t(item)}</span>{mode === item && <i />}</button>)}</div>
-    <div className="view-controls"><div className="view-menu-wrap"><button className="view-button" aria-label={t('view')} aria-expanded={viewMenu} onClick={() => setViewMenu(!viewMenu)}><Maximize2 size={15} /><span>{t('view')}</span><ChevronDown size={12} /></button>{viewMenu && <div className="view-menu">{(['oblique', 'top', 'focus'] as const).map(v => <button key={v} disabled={v === 'focus' && selected === null} onClick={() => { interact(() => state.setView(v)); setViewMenu(false) }}>{t(v)}{view === v && <Check size={12} />}</button>)}</div>}</div>
+    <div className="view-controls"><div className="view-menu-wrap"><button className="view-button" aria-label={t('view')} aria-expanded={viewMenu} onClick={() => setViewMenu(!viewMenu)}><Maximize2 size={15} /><span>{t('view')}</span><ChevronDown size={12} /></button>{viewMenu && <div className="view-menu">{(['oblique', 'top', 'focus'] as const).map(v => <button key={v} disabled={v === 'focus' && (selected === null || mode === 'compare')} onClick={() => { interact(() => state.setView(v)); setViewMenu(false) }}>{t(v)}{view === v && <Check size={12} />}</button>)}</div>}</div>
       <button className="icon-button reset-button" aria-label={t('reset')} onClick={() => interact(() => state.setView('oblique'))}><RotateCcw size={15} /></button>
     </div>
     <div className={`number-picker ${picker ? 'open' : ''}`} id="number-index"><button className="number-picker-trigger" aria-expanded={picker} onClick={() => setPicker(!picker)}>{t('selection')} <ChevronDown size={12} /></button><div className="number-list" aria-label={language === 'zh-CN' ? '选择数字' : 'Select a number'}>{Array.from({ length: mode === 'hetu' ? 10 : 9 }, (_, i) => i + 1).map(n => <button key={n} aria-label={`${t('selection')} ${n}`} aria-pressed={selected === n} onClick={() => interact(() => select(n))}>{n}</button>)}</div></div>

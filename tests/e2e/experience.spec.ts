@@ -31,6 +31,11 @@ test('loads the real 3D experience and changes diagrams and relations without er
   await page.getByRole('button', { name: 'Compare', exact: true }).click()
   await expect(page.locator('.scene-number')).toHaveCount(19)
   await expect(page.locator('.experience')).toHaveAttribute('data-mode', 'compare')
+  await expect(page.locator('.scene-number.active')).toHaveText(['1', '1'])
+  await page.waitForTimeout(1200)
+  const explanation = await page.locator('.relation-panel').boundingBox()
+  const labelBounds = await page.locator('.scene-number').evaluateAll(labels => labels.map(label => label.getBoundingClientRect().right))
+  expect(Math.max(...labelBounds)).toBeLessThan(explanation!.x)
   expect(errors).toEqual([])
 })
 test('sources stay hidden until hover or focus, then show real bibliographic details', async ({ page }) => {

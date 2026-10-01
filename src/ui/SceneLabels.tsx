@@ -13,7 +13,7 @@ export default function SceneLabels() {
   return <div className="scene-label-layer" aria-hidden="true">{diagrams.map((diagram, index) => {
     const offset = compared ? index === 0 ? -4.5 : 4.5 : 0
     const scale = compared ? .72 : 1
-    const active = relatedNumbers(diagram, lens, selected ?? hovered, line, relationPlaying ? (cycle === 'generating' ? GENERATING : CONTROLLING)[cycleIndex % 5] : undefined)
+    const active = relatedNumbers(diagram, lens, selected ?? hovered, line, relationPlaying ? (cycle === 'generating' ? GENERATING : CONTROLLING)[cycleIndex % 5] : undefined, mode === 'compare')
     const world = ([x, y, z]: Vec3) => [x * scale + offset, y * scale, z * scale].join(',')
     return <div key={diagram}>
       {groupsFor(diagram).map(group => <span key={group.number} className={`scene-label scene-number ${active.includes(group.number) ? 'active' : ''}`} data-position={world(numberLabelPosition(diagram, group.number))}>{group.number}</span>)}

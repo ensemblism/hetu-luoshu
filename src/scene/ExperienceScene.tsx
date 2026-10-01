@@ -103,7 +103,7 @@ function DotField({ diagram }: { diagram: Diagram }) {
   const white = useRef<THREE.InstancedMesh>(null)
   const black = useRef<THREE.InstancedMesh>(null)
   const { invalidate, gl } = useThree()
-  const { lens, selected, hovered, line, reduced, quality, cycleIndex, cycle, relationPlaying } = useExperience()
+  const { mode, lens, selected, hovered, line, reduced, quality, cycleIndex, cycle, relationPlaying } = useExperience()
   const whiteDots = useMemo(() => ALL_DOTS.filter(d => d.yang), [])
   const blackDots = useMemo(() => ALL_DOTS.filter(d => !d.yang), [])
   const targetDots = useMemo(() => new Map(makeDots(diagram).map(dot => [dot.id, dot])), [diagram])
@@ -116,7 +116,7 @@ function DotField({ diagram }: { diagram: Diagram }) {
   const duration = useRef(0)
   const sequence = cycle === 'generating' ? GENERATING : CONTROLLING
   const activeElement = sequence[cycleIndex % 5]
-  const selectedNumbers = relatedNumbers(diagram, lens, selected ?? hovered, line, relationPlaying ? activeElement : undefined)
+  const selectedNumbers = relatedNumbers(diagram, lens, selected ?? hovered, line, relationPlaying ? activeElement : undefined, mode === 'compare')
   const selectionKey = selectedNumbers.join(',')
   useEffect(() => {
     startPositions.current = new Map([...positions.current].map(([key, p]) => [key, [...p] as Vec3]))
@@ -179,11 +179,11 @@ function DotField({ diagram }: { diagram: Diagram }) {
 }
 
 function Relations({ diagram }: { diagram: Diagram }) {
-  const { lens, selected, hovered, line, relationPlaying, cycleIndex, cycle } = useExperience()
+  const { mode, lens, selected, hovered, line, relationPlaying, cycleIndex, cycle } = useExperience()
   const active = selected ?? hovered
   const sequence = cycle === 'generating' ? GENERATING : CONTROLLING
   const from = sequence[cycleIndex % 5], to = sequence[(cycleIndex + 1) % 5]
-  const numbers = relatedNumbers(diagram, lens, active, line, relationPlaying ? from : undefined)
+  const numbers = relatedNumbers(diagram, lens, active, line, relationPlaying ? from : undefined, mode === 'compare')
   const points = numbers.map(n => groupFor(diagram, n)?.center).filter(Boolean) as Vec3[]
   const cyclePoints = relationPlaying ? [from, to].map(phase => groupsFor(diagram).find(g => g.element === phase)?.center).filter(Boolean) as Vec3[] : []
   const path = lens === 'balance' && diagram === 'luoshu' ? [...BALANCE_LINES[line]].map(n => groupFor(diagram, n)!.center) : points

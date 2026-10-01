@@ -64,12 +64,13 @@ export function makeDots(diagram: Diagram): Dot[] {
     position: [group.center[0] + x, 0.2, group.center[2] + z] as Vec3,
   })))
 }
-export function relatedNumbers(diagram: Diagram, lens: Lens, selected: number | null, line: number, activePhase?: Element): number[] {
+export function relatedNumbers(diagram: Diagram, lens: Lens, selected: number | null, line: number, activePhase?: Element, trackOnly = false): number[] {
   if (lens === 'balance' && diagram === 'luoshu') return [...BALANCE_LINES[line % 8]]
   if (lens === 'elements' && activePhase) return groupsFor(diagram).filter(g => g.element === activePhase).map(g => g.number)
   if (selected === null) return []
   if (lens === 'polarity') return groupsFor(diagram).filter(g => g.number % 2 === selected % 2).map(g => g.number)
   if (lens === 'elements') return groupsFor(diagram).filter(g => g.element === groupFor(diagram, selected)?.element).map(g => g.number)
+  if (trackOnly) return [selected]
   if (diagram === 'hetu') return [...(HETU_PAIRS.find(pair => pair.includes(selected as never)) || [selected])]
   return selected === 5 ? [5] : [selected, 10 - selected, 5]
 }
