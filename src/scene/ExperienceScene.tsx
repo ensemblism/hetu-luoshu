@@ -59,6 +59,7 @@ function CameraRig() {
   useEffect(() => {
     const element = gl.domElement
     const handler = (event: KeyboardEvent) => {
+      if (event.ctrlKey || event.metaKey || event.altKey) return
       const control = controls.current
       if (!control || guide) return
       if (['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(event.key)) {

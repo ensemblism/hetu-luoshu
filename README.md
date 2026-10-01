@@ -13,6 +13,8 @@ Use Node 24 (see `.nvmrc`). Run `npm ci`, then `npm run dev`. Open the printed U
 - `npm run preview`: inspect the production build.
 - `npm run test:e2e`: build and test 3D, references, language, mobile, introduction and SVG fallback.
 
+Browser tests use installed Google Chrome on macOS. On Linux, install the test browser once with `npx playwright install --with-deps --only-shell chromium`, or set `PLAYWRIGHT_CHANNEL=chrome` to use an installed Chrome. The workflows use Google Chrome preinstalled on the pinned Ubuntu 24.04 runner.
+
 ## GitHub Pages
 
 Choose **GitHub Actions** in repository Settings → Pages. The included workflow deploys `dist/` on `main` updates and supports manual runs. All runtime resources are local static files. Node is only used to build.

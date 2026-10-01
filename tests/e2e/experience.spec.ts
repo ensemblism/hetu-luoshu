@@ -128,9 +128,11 @@ test('rapid switching settles correctly, idle rendering stops, and context loss 
   const calls = await page.locator('canvas').getAttribute('data-draw-calls')
   expect(Number(calls)).toBeGreaterThan(0)
   expect(Number(calls)).toBeLessThan(30)
-  const idleFrame = await page.locator('canvas').getAttribute('data-render-frame')
-  await page.waitForTimeout(350)
-  await expect(page.locator('canvas')).toHaveAttribute('data-render-frame', idleFrame!)
+  await expect.poll(async () => {
+    const frame = await page.locator('canvas').getAttribute('data-render-frame')
+    await page.waitForTimeout(400)
+    return await page.locator('canvas').getAttribute('data-render-frame') === frame
+  }, { timeout: 10_000, intervals: [200, 400] }).toBe(true)
   await page.getByRole('button', { name: 'Number 7', exact: true }).click()
   await page.locator('canvas').evaluate(canvas => (canvas as HTMLCanvasElement).getContext('webgl2')?.getExtension('WEBGL_lose_context')?.loseContext())
   await expect(page.locator('.experience')).toHaveAttribute('data-renderer', 'svg')

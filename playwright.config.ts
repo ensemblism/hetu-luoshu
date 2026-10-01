@@ -10,7 +10,7 @@ export default defineConfig({
     baseURL,
     viewport: { width: 1440, height: 900 },
     locale: 'en-US',
-    channel: process.platform === 'darwin' ? 'chrome' : undefined,
+    channel: process.env.PLAYWRIGHT_CHANNEL || (process.platform === 'darwin' ? 'chrome' : undefined),
     launchOptions: { args: ['--use-angle=swiftshader', '--enable-unsafe-swiftshader'] },
     trace: 'retain-on-failure',
   },
