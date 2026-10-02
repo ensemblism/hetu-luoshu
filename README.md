@@ -1,34 +1,57 @@
+<a id="english"></a>
+
 # Hetu × Luoshu
 
-A static, bilingual 3D exploration of the River Map and Luo Writing, with source-based introductions to number relations, cultural history and classical reading.
+An interactive 3D study of the River Map and Luo Writing: numbers, directions, yin–yang and five-phase relations, with traceable sources.
 
-[Experience the work](https://ensemblism.github.io/hetu-luoshu/) · [Source repository](https://github.com/ensemblism/hetu-luoshu)
+[Open the work](https://ensemblism.github.io/hetu-luoshu/?lang=en) · [中文说明](#中文说明)
+
+## Use
+
+Switch between Hetu, Luoshu and their comparison. Drag to orbit, scroll to zoom, select a number to explore. In **Five phases**, begin with associations, then step through generating or controlling relations. Hover, focus or tap ※ for sources. Sound is optional.
 
 ## Develop
 
-Use Node 24 (see `.nvmrc`). Run `npm ci`, then `npm run dev`. Open the printed URL at `/hetu-luoshu/`.
+Node 24. No runtime server or external API.
 
-- `npm run check`: TypeScript and mathematical/content invariants.
-- `npm run build`: generate the canonical static poster and build `dist/`.
-- `npm run preview`: inspect the production build.
-- `npm run test:e2e`: build and test 3D, references, language, mobile, introduction and SVG fallback.
+```sh
+npm ci
+npm run dev
+```
 
-Browser tests use installed Google Chrome on macOS. On Linux, install the test browser once with `npx playwright install --with-deps --only-shell chromium`, or set `PLAYWRIGHT_CHANNEL=chrome` to use an installed Chrome. The workflows use Google Chrome preinstalled on the pinned Ubuntu 24.04 runner.
+`npm run check` checks types and data; `npm run test:e2e` checks browser behavior; `npm run build` produces `dist/`.
 
-## GitHub Pages
+## Deploy & sources
 
-Choose **GitHub Actions** in repository Settings → Pages. The included workflow deploys `dist/` on `main` updates and supports manual runs. All runtime resources are local static files. Node is only used to build.
+Pushes to `main` deploy through GitHub Actions to Pages. Default base: `/hetu-luoshu/`; the workflow handles custom domains. [Development notes](docs/development.md).
 
-The default Vite base is `/hetu-luoshu/`. The deploy workflow derives the actual path from Pages metadata. For a custom-domain root build, set `PAGES_BASE_PATH=/`. There is no pathname router; refreshing language query parameters does not require a server fallback.
+The diagrams follow *Yixue Qimeng*. Spatial layers and the original synthesized soundscape are contemporary interpretations. [Sources](docs/content-model.md) · [Visual conventions](docs/visual-direction.md).
 
-## Content and interpretation
+---
 
-The work follows the ten-number Hetu and nine-number Luoshu discussed in *Yixue Qimeng*. It distinguishes classical texts, later scholarship, arithmetic observations and contemporary artistic choices. Small reference marks open authentic bibliographic information on hover, focus or tap.
+# 中文说明
 
-Geometry, vertical positions, materials and transition trajectories are contemporary design. The transition compares layouts rather than asserting a unique historical derivation. The later nine-palace phase associations are separate from Hetu's generating/completing number associations.
+以三维交互阅读河图与洛书：点数、方位、阴阳与五行关系，随文可查真实出处。
 
-See `docs/content-model.md` for the source register and `docs/visual-direction.md` for rendering conventions. Historical passages are quoted with modern punctuation and explicit ellipses where excerpted. The interface's English explanatory text is the project's own translation, not a quotation from a historical English edition.
+[在线体验](https://ensemblism.github.io/hetu-luoshu/?lang=zh-CN) · [English](#english)
 
-## Accessibility and performance
+## 使用
 
-Keyboard-accessible number selection complements direct 3D picking. Canvas arrows orbit, +/− zoom and Home resets. Reduced motion uses manual introduction steps. SVG fallback shares the canonical mathematical data. System fonts avoid external services and large CJK downloads. The renderer stops drawing when idle.
+切换河图、洛书与对照；拖动旋转，滚动缩放，点击数字探索。**五行**先认配属，再逐步观察相生、相克。悬停、聚焦或轻触 ※ 查看出处；声音按需开启。
+
+## 开发
+
+Node 24。运行时无需服务端或外部 API。
+
+```sh
+npm ci
+npm run dev
+```
+
+`npm run check` 检查类型与数据；`npm run test:e2e` 检查浏览器行为；`npm run build` 输出 `dist/`。
+
+## 部署与来源
+
+推送至 `main` 后，GitHub Actions 自动部署至 Pages。默认子路径 `/hetu-luoshu/`，工作流兼容自定义域名。[开发说明](docs/development.md)。
+
+图式采用《易学启蒙》所论十数河图、九数洛书；空间分层与原创合成音景为当代表达。[文献来源](docs/content-model.md) · [视觉约定](docs/visual-direction.md)。

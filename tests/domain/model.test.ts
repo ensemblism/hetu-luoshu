@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
-import { BALANCE_LINES, HETU, HETU_PAIRS, LUOSHU, LUOSHU_GRID, OPPOSITE_PAIRS, groupFor, localDots, makeDots } from '../../src/domain/model'
-import { copy, guideSteps, lessons } from '../../src/content/text'
+import { BALANCE_LINES, CONTROLLING, GENERATING, HETU, HETU_PAIRS, LUOSHU, LUOSHU_GRID, OPPOSITE_PAIRS, groupFor, groupPosition, localDots, makeDots, phaseSelection, phaseTarget, pointCount } from '../../src/domain/model'
+import { copy, lessons } from '../../src/content/text'
 import { sources } from '../../src/content/sources'
 
 describe('diagram invariants, checked against the chosen traditional arrangements', () => {
@@ -54,11 +54,30 @@ describe('diagram invariants, checked against the chosen traditional arrangement
     expect(removed).toHaveLength(10)
     expect(removed.every(d => d.number === 10)).toBe(true)
   })
+  it('explains totals from the actual number groups and includes every member of both phase endpoints', () => {
+    expect(pointCount('hetu')).toMatchObject({ total: 55, white: 25, black: 30 })
+    expect(pointCount('luoshu')).toMatchObject({ total: 45, white: 25, black: 20 })
+    expect(phaseSelection('hetu', 'water', 'generating')).toEqual({ from: [1, 6], to: [3, 8], target: 'wood' })
+    expect(phaseSelection('luoshu', 'water', 'generating')).toEqual({ from: [1], to: [3, 4], target: 'wood' })
+    expect(phaseSelection('luoshu', 'earth', 'mapping')).toEqual({ from: [2, 5, 8], to: [], target: null })
+    for (const [study, sequence] of [['generating', GENERATING], ['controlling', CONTROLLING]] as const) sequence.forEach((phase, index) => expect(phaseTarget(phase, study)).toBe(sequence[(index + 1) % 5]))
+  })
+  it('keeps canonical directions independent from contemporary heights and later trigram associations', () => {
+    expect(groupFor('luoshu', 6)?.trigram).toBe('qian')
+    expect(groupFor('luoshu', 5)?.trigram).toBeUndefined()
+    for (const diagram of ['hetu', 'luoshu'] as const) for (const group of diagram === 'hetu' ? HETU : LUOSHU) {
+      const expanded = groupPosition(diagram, group.number, 'original', true)
+      const flat = groupPosition(diagram, group.number, 'original', false)
+      expect([expanded[0], expanded[2]]).toEqual([flat[0], flat[2]])
+      expect(flat[1]).toBe(.2)
+      expect(expanded[1]).toBe(diagram === 'hetu' && group.number >= 6 ? 5.1 : .2)
+    }
+  })
 })
 describe('bilingual content and traceable references', () => {
   it('has both languages and resolves every cited source', () => {
     for (const text of Object.values(copy)) expect(text.every(v => v.trim().length > 0)).toBe(true)
-    for (const item of [...guideSteps, ...Object.values(lessons).flat()]) {
+    for (const item of Object.values(lessons).flat()) {
       expect(item.title.every(Boolean)).toBe(true)
       expect(item.body.every(Boolean)).toBe(true)
       if (item.source) expect(sources[item.source]).toBeDefined()

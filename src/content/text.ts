@@ -1,4 +1,4 @@
-import type { Direction, Element, Language } from '../domain/model'
+import type { Direction, Element, Language, Trigram } from '../domain/model'
 export type Bilingual = [string, string]
 export const pick = (text: Bilingual, lang: Language) => text[lang === 'zh-CN' ? 0 : 1]
 export const directions: Record<Direction, Bilingual> = { north: ['北', 'North'], south: ['南', 'South'], east: ['东', 'East'], west: ['西', 'West'], center: ['中', 'Center'], ne: ['东北', 'Northeast'], nw: ['西北', 'Northwest'], se: ['东南', 'Southeast'], sw: ['西南', 'Southwest'] }
@@ -13,13 +13,13 @@ export const copy = {
   luoshuIntro: ['一至九，布列九宫。纵、横、斜，皆合十五。', 'One to nine in a square. Every row, column and diagonal sums to fifteen.'],
   compareIntro: ['循同一数字，观察两种秩序之间的位置变化。', 'Follow a number to see how its position changes between two arrangements.'],
   explore: ['探索关系', 'Explore relations'], intro: ['入门', 'Learn'], about: ['关于', 'About'], view: ['视角', 'View'],
-  oblique: ['空间视角', 'Spatial view'], top: ['阅读视角', 'Reading view'], focus: ['聚焦所选', 'Focus selection'], reset: ['复位', 'Reset'],
+  oblique: ['空间展开', 'Spatial unfolding'], top: ['阅读视角', 'Reading view'], focus: ['聚焦所选', 'Focus selection'], reset: ['复位', 'Reset'],
   controls: ['拖动旋转 · 滚动缩放 · 点击探索', 'Drag to orbit · Scroll to zoom · Select to explore'],
   mobileControls: ['单指旋转 · 双指缩放 · 轻触探索', 'Drag to orbit · Pinch to zoom · Tap to explore'],
   source: ['查看出处', 'View source'], readSource: ['阅读原文 ↗', 'Read the source ↗'], close: ['关闭', 'Close'],
-  skip: ['跳过导览', 'Skip introduction'], pause: ['暂停', 'Pause'], resume: ['继续', 'Resume'], next: ['下一步', 'Next'], replay: ['重播导览', 'Replay introduction'],
+  pause: ['暂停', 'Pause'], resume: ['继续', 'Resume'], next: ['下一步', 'Next'],
   selection: ['数字', 'Number'], yang: ['阳 · 奇数', 'Yang · odd'], yin: ['阴 · 偶数', 'Yin · even'], direction: ['方位', 'Direction'], phase: ['配属', 'Phase'],
-  count: ['点', 'points'], clear: ['取消选择', 'Clear selection'], choose: ['选择一个数字，展开它的关系。', 'Select a number to uncover its relations.'],
+  count: ['点', 'points'], totalPoints: ['总点数', 'Total points'], clear: ['取消选择', 'Clear selection'], choose: ['选择一个数字，展开它的关系。', 'Select a number to uncover its relations.'],
   pairExplanation: ['生数与成数同居一方，彼此相差五。', 'A generating number and its completing number share a direction and differ by five.'],
   polarityExplanation: ['本图式以白点表奇数，以黑点表偶数；奇偶分别配属阳、阴。', 'In this diagram, white points denote odd numbers and black points even numbers, associated with yang and yin.'],
   balanceExplanation: ['由本图点数计算：每行、每列及两条对角线，合数皆为十五。', 'Calculated from this arrangement: every row, column and both diagonals sum to fifteen.'],
@@ -27,7 +27,7 @@ export const copy = {
   elementExplanation: ['河图以五行生成数配属五方；颜色只在当前关系中作提示。', 'Hetu associates generating and completing numbers with five phases and directions. Color accents mark the active relation.'],
   palaceExplanation: ['此处使用后天九宫的方位与卦象配属；与河图的数字五行配属分别理解。', 'This layer uses later nine-palace and trigram associations, distinct from the number–phase associations in Hetu.'],
   computed: ['点阵计算', 'From the arrangement'], traditional: ['传统配属', 'Traditional association'],
-  generating: ['相生', 'Generating'], controlling: ['相克', 'Controlling'], playRelation: ['演示关系', 'Play relation'], stop: ['停止', 'Stop'],
+  mapping: ['配属', 'Associations'], generating: ['相生', 'Generating'], controlling: ['相克', 'Controlling'], playRelation: ['演示关系', 'Play relation'], stop: ['停止', 'Stop'],
   line: ['纵横斜线', 'Lines of fifteen'], previous: ['上一条', 'Previous'], following: ['下一条', 'Next'],
   twoD: ['二维阅读', '2D reading'], threeD: ['三维探索', '3D exploration'], loading: ['空间正在显现', 'Preparing the space'],
   fallback: ['已切换至二维阅读，数字与关系保持完整。', '2D reading is active. All numbers and relations remain available.'],
@@ -37,14 +37,14 @@ export const copy = {
   historyTitle: ['图书之名，历代之说', 'Names with a history'], methodTitle: ['观象、辨数、知其所出', 'Observe, compare, trace the source'],
   tenNote: ['十属于河图；切换后已清除选择。', 'Ten belongs to Hetu; the selection has been cleared.'],
   orientation: ['南上 · 东左', 'South above · East left'],
+  teaching: ['空间展开 · 教学示意', 'Spatial unfolding · teaching model'],
+  phaseRing: ['关系环 · 顺序示意', 'Relation ring · sequence, not direction'],
+  generatingNumbers: ['生数 · 1—5', 'Generating · 1–5'], completingNumbers: ['成数 · 6—10', 'Completing · 6–10'],
+  sound: ['声音', 'Sound'], soundOn: ['开启音景', 'Enable soundscape'], soundOff: ['关闭音景', 'Disable soundscape'], volume: ['音量', 'Volume'],
+  soundLoading: ['音景载入中', 'Loading soundscape'], soundError: ['音景暂未播放，点击重试', 'Sound unavailable. Tap to retry.'],
+
 } satisfies Record<string, Bilingual>
-export const guideSteps: { title: Bilingual; body: Bilingual; source?: string }[] = [
-  { title: ['从点，开始', 'Begin with a point'], body: ['每一组点，组成一个数字。河图以一至十，布列五方。', 'Each group of points forms a number. Hetu places one through ten across five directions.'], source: 'hetu' },
-  { title: ['一与六，共居北方', 'One and six, together in the north'], body: ['一为生数，六为成数。同方相合，彼此相差五。', 'One is a generating number; six completes it. They share a direction and differ by five.'], source: 'generation' },
-  { title: ['同一组数，另一种秩序', 'The numbers find another arrangement'], body: ['一至九重新布列。十淡出；这里演示的是布局对照。', 'One through nine move to new positions. Ten recedes. This transition compares the two layouts.'] },
-  { title: ['中五，纵横皆十五', 'Five at the center. Fifteen in every line.'], body: ['九、五、一合十五。每行、每列、两条对角线亦然。', 'Nine, five and one total fifteen. So do every row, column and both diagonals.'] },
-  { title: ['循数而观，关系自明', 'Follow a number. Find its relations.'], body: ['轻触一个数字，或选择关系视图，继续探索。', 'Select a number or a relation view to continue your exploration.'] },
-]
+export const trigrams: Record<Trigram, Bilingual> = { kan: ['坎', 'Kan'], kun: ['坤', 'Kun'], zhen: ['震', 'Zhen'], xun: ['巽', 'Xun'], qian: ['乾', 'Qian'], dui: ['兑', 'Dui'], gen: ['艮', 'Gen'], li: ['离', 'Li'] }
 export const lessons: Record<'read' | 'history' | 'method', { title: Bilingual; body: Bilingual; source?: string; source2?: string; action?: 'pairs' | 'balance' | 'polarity' }[]> = {
   read: [
     { title: ['01 / 点就是数', '01 / Count the points'], body: ['先数点，再看奇偶。白点组成奇数，黑点组成偶数；此图式以奇为阳、偶为阴。', 'Count first, then compare parity. White groups are odd and black groups even; this convention associates odd with yang and even with yin.'], source: 'polarity', action: 'polarity' },

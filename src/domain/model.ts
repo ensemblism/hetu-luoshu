@@ -4,8 +4,11 @@ export type Language = 'zh-CN' | 'en'
 export type Lens = 'original' | 'polarity' | 'pairs' | 'balance' | 'elements'
 export type Direction = 'north' | 'south' | 'east' | 'west' | 'center' | 'ne' | 'nw' | 'se' | 'sw'
 export type Element = 'water' | 'fire' | 'wood' | 'metal' | 'earth'
+export type PhaseStudy = 'mapping' | 'generating' | 'controlling'
+export type View = 'oblique' | 'top' | 'focus'
+export type Trigram = 'kan' | 'kun' | 'zhen' | 'xun' | 'qian' | 'dui' | 'gen' | 'li'
 export type Vec3 = [number, number, number]
-export interface NumberGroup { number: number; direction: Direction; center: Vec3; element: Element }
+export interface NumberGroup { number: number; direction: Direction; center: Vec3; element: Element; trigram?: Trigram }
 export interface Dot { id: string; number: number; index: number; position: Vec3; yang: boolean }
 
 // World X points west; world Z points north. The reading view has south at the top.
@@ -24,9 +27,11 @@ export const HETU: NumberGroup[] = [
 export const LUOSHU_GRID = [[4, 9, 2], [3, 5, 7], [8, 1, 6]] as const
 const palaceElements: Element[] = ['earth', 'water', 'earth', 'wood', 'wood', 'earth', 'metal', 'metal', 'earth', 'fire']
 const palaceDirections: Direction[][] = [['se', 'south', 'sw'], ['east', 'center', 'west'], ['ne', 'north', 'nw']]
+const palaceTrigrams: Partial<Record<number, Trigram>> = { 1: 'kan', 2: 'kun', 3: 'zhen', 4: 'xun', 6: 'qian', 7: 'dui', 8: 'gen', 9: 'li' }
 export const LUOSHU: NumberGroup[] = LUOSHU_GRID.flatMap((row, z) => row.map((number, x) => ({
   number, direction: palaceDirections[z][x], center: [(x - 1) * 2.8, 0, (z - 1) * 2.8] as Vec3,
   element: palaceElements[number],
+  trigram: palaceTrigrams[number],
 }))).sort((a, b) => a.number - b.number)
 export const HETU_PAIRS = [[1, 6], [2, 7], [3, 8], [4, 9], [5, 10]] as const
 export const BALANCE_LINES = [
@@ -38,6 +43,32 @@ export const GENERATING: Element[] = ['wood', 'fire', 'earth', 'metal', 'water']
 export const CONTROLLING: Element[] = ['wood', 'earth', 'water', 'fire', 'metal']
 export const groupsFor = (diagram: Diagram) => diagram === 'hetu' ? HETU : LUOSHU
 export const groupFor = (diagram: Diagram, number: number) => groupsFor(diagram).find(group => group.number === number)
+export const phaseNumbers = (diagram: Diagram, element: Element) => groupsFor(diagram).filter(group => group.element === element).map(group => group.number)
+export function phaseTarget(element: Element, study: PhaseStudy): Element | null {
+  if (study === 'mapping') return null
+  const order = study === 'generating' ? GENERATING : CONTROLLING
+  return order[(order.indexOf(element) + 1) % 5]
+}
+export function phaseSelection(diagram: Diagram, element: Element, study: PhaseStudy) {
+  const target = phaseTarget(element, study)
+  return { from: phaseNumbers(diagram, element), to: target ? phaseNumbers(diagram, target) : [], target }
+}
+export function pointCount(diagram: Diagram) {
+  const numbers = groupsFor(diagram).map(group => group.number)
+  const white = numbers.filter(n => n % 2).reduce((sum, n) => sum + n, 0)
+  const black = numbers.filter(n => !(n % 2)).reduce((sum, n) => sum + n, 0)
+  return { numbers, white, black, total: white + black }
+}
+// These heights and node locations belong to the contemporary teaching layer.
+export function groupPosition(diagram: Diagram, number: number, lens: Lens, expanded: boolean): Vec3 {
+  const [x, , z] = groupFor(diagram, number)!.center
+  const y = expanded && diagram === 'hetu' && (lens === 'original' || lens === 'pairs') && number >= 6 ? 5.1 : .2
+  return [x, y, z]
+}
+export function phaseNodePosition(element: Element, expanded: boolean): Vec3 {
+  const angle = GENERATING.indexOf(element) * Math.PI * 2 / 5 - Math.PI / 2
+  return [Math.cos(angle) * 3.5, expanded ? 4.6 : .24, Math.sin(angle) * 3.5]
+}
 export function numberLabelPosition(diagram: Diagram, number: number): Vec3 {
   const center = groupFor(diagram, number)!.center
   const offsets: Record<number, [number, number]> = { 1: [.65, 0], 2: [.7, 0], 3: [0, .75], 4: [0, .75], 5: [0, .75], 6: [0, .92], 7: [0, -.88], 8: [-.86, 0], 9: [.86, 0], 10: [1.45, 0] }
