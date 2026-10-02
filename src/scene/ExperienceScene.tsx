@@ -51,7 +51,8 @@ function CameraRig() {
       const points = members.map(n => groupPosition(mode, n, lens, expanded))
       target = [0, 1, 2].map(axis => (Math.min(...points.map(p => p[axis])) + Math.max(...points.map(p => p[axis]))) / 2) as Vec3
     }
-    const position: Vec3 = view === 'top' ? [target[0], 16, target[2] + .01] : [target[0] + 1.1, target[1] + 11.5, target[2] + 12.5]
+    const separatePairs = expanded && mode === 'hetu' && (lens === 'original' || lens === 'pairs')
+    const position: Vec3 = view === 'top' ? [target[0], 16, target[2] + .01] : [target[0] + (separatePairs ? 6 : 1.1), target[1] + 11.5, target[2] + (separatePairs ? 11 : 12.5)]
     const zoom = fit * (lens === 'elements' ? 1 : view === 'focus' && selected !== null ? 1.55 : 1)
     control.enabled = false
     animation.current = gsap.timeline({ onUpdate: () => { control.update(); invalidate() }, onComplete: () => { control.enabled = true; invalidate() } })
